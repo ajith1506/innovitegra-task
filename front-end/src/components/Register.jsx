@@ -27,9 +27,9 @@ const Register = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          navigateTo("/login"); // If registration is successful, redirect to login
+          navigateTo("/login");
         } else {
-          alert(data.message); // Show error message if registration fails
+          alert(data.message);
         }
       })
       .catch((error) => {
