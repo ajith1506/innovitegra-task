@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Register.css";
 
 const Register = () => {
-  const [username, setUsername] = useState(""); // Updated from firstname
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigateTo = useNavigate();
@@ -12,7 +12,7 @@ const Register = () => {
     event.preventDefault();
 
     const values = {
-      username, // Changed from firstname to username
+      username,
       email,
       password,
     };
@@ -27,13 +27,14 @@ const Register = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
-          navigateTo("/login");
+          navigateTo("/login"); // If registration is successful, redirect to login
         } else {
-          alert(data.message); // Notify user of any errors
+          alert(data.message); // Show error message if registration fails
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.log("Error:", error);
+        alert("An error occurred. Please try again later.");
       });
   };
 
@@ -45,7 +46,7 @@ const Register = () => {
             type="text"
             placeholder="Username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)} // Updated
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
           <input
@@ -65,7 +66,9 @@ const Register = () => {
           <hr />
           <span>
             <Link to="/login">Already registered? Login</Link>
-            <button type="submit">Register</button>
+            <button className="register" type="submit">
+              Register
+            </button>
           </span>
         </form>
         <p>Powered By Ajith</p>

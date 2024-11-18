@@ -10,13 +10,14 @@ const registerUser = async (req, res) => {
 
   try {
     const checkUser = await User.findOne({ email });
-    if (checkUser)
-      return res.json({
+    if (checkUser) {
+      return res.status(400).json({
         success: false,
-        message: "User Already exists with the same email! Please try again",
+        message: "User already exists with the same email. Please try again.",
       });
+    }
 
-    const hashPassword = await bcrypt.hash(password, 12);
+    const hashPassword = await bcrypt.hashSync(password, 12);
     const newUser = new User({
       username,
       email,
@@ -26,13 +27,13 @@ const registerUser = async (req, res) => {
     await newUser.save();
     res.status(200).json({
       success: true,
-      message: "Registration successful",
+      message: "Registration successful.",
     });
   } catch (e) {
     console.log(e);
     res.status(500).json({
       success: false,
-      message: "Some error occured",
+      message: "An error occurred during registration. Please try again.",
     });
   }
 };
@@ -49,7 +50,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const checkPasswordMatch = await bcrypt.compare(
+    const checkPasswordMatch = await bcrypt.compareSync(
       password,
       checkUser.password
     );
@@ -63,12 +64,11 @@ const loginUser = async (req, res) => {
     const token = jwt.sign(
       {
         id: checkUser._id,
-        email: checkUser.email,
-        username: checkUser.username,
       },
       process.env.SECRETKEY,
       { expiresIn: "24h" }
     );
+    const { password: pass, ...rest } = checkUser._doc;
 
     res
       .cookie("token", token, { httpOnly: true, secure: false })
@@ -76,15 +76,10 @@ const loginUser = async (req, res) => {
       .json({
         success: true,
         token,
-        message: "Logged in successfully.",
-        user: {
-          email: checkUser.email,
-          id: checkUser._id,
-          username: checkUser.username,
-        },
+        ...rest,
       });
   } catch (error) {
-    console.error("Error during login:", error);
+    console.log("Error during login:", error);
     res.status(500).json({
       success: false,
       message: "Some error occurred. Please try again.",
